@@ -30,6 +30,7 @@ const weatherRoutes = require('./api/routes/weatherInfo');
 const imageUploadRoutes = require('./api/routes/imageUpload');
 const youTubeDownloadRoutes = require('./api/routes/youTubeDownload');
 const ID3TagRoutes = require('./api/routes/ID3TagService');
+const hasImageRoutes = require('./api/routes/imageService');
 app.use('/youTubeInfo', youTubeInfoRoutes);
 app.use('/webPageInfo', webPageInfoRoutes);
 app.use('/MP3Tag', MP3TagRoutes);
@@ -37,6 +38,7 @@ app.use('/weatherInfo', weatherRoutes);
 app.use('/imageUpload', imageUploadRoutes);
 app.use('/youTubeDL', youTubeDownloadRoutes);
 app.use('/ID3Tags', ID3TagRoutes);
+app.use('/imageSearch', hasImageRoutes);
 exports.default = app;
 // module.exports = app;
 //# sourceMappingURL=app.js.map
