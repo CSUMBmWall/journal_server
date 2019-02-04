@@ -34,6 +34,7 @@ const imageUploadRoutes = require('./api/routes/imageUpload');
 const youTubeDownloadRoutes = require('./api/routes/youTubeDownload');
 const ID3TagRoutes = require('./api/routes/ID3TagService');
 const hasImageRoutes = require('./api/routes/imageService');
+const TrelloRoutes = require('./api/routes/TrelloGetInfo');
 
 
 app.use('/youTubeInfo', youTubeInfoRoutes);
@@ -44,6 +45,7 @@ app.use('/imageUpload', imageUploadRoutes);
 app.use('/youTubeDL', youTubeDownloadRoutes);
 app.use('/ID3Tags', ID3TagRoutes);
 app.use('/imageSearch', hasImageRoutes);
+app.use('/TrelloInfo', TrelloRoutes);
 
 export default app;
 // module.exports = app;
