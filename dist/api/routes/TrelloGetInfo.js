@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require('fs');
 const express = require('express');
 const router = express.Router();
 const request = require('request');
@@ -70,8 +71,50 @@ router.post('/getCards', (req, res, next) => {
     request(options, function (err, response, body) {
         if (err)
             console.log(err);
-        console.log(body);
-        res.status(200).send(body);
+        // var stream = fs.createWriteStream("my_file.txt");
+        // stream.once('open', function(fd: any) {
+        //     stream.write("My first row\n");
+        //     stream.write("My second row\n");
+        //     stream.end();
+        // });
+        var board_info = '';
+        const columns = ['Group', 'Name', 'Location', 'Role'];
+        board_info += columns.join(', ') + '\n';
+        //will receive board object
+        for (const board of JSON.parse(body)) {
+            //skip legend list
+            if (board.name == 'Legend')
+                continue;
+            for (const card of board.cards) {
+                board_info += board.name + ', ';
+                //split person's name and location/job in two
+                const person_info = card.name.split(/\s/);
+                board_info += person_info.slice(0, 2).join(' ') + ', ';
+                board_info += person_info.slice(2).join(' ') + ', ';
+                //in case there is no location
+                //if (person_info.length <= 2) board_info += ', ';
+                // board_info += card.name + ', ';
+                for (const label of card.labels) {
+                    //console.log('label ' + label.name);
+                    board_info += label.name;
+                }
+                board_info += '\n';
+            }
+            //board_info += '\n';
+        }
+        console.log(board_info);
+        // writefile.js
+        const fs = require('fs');
+        // write to a new file named 2pac.txt
+        fs.writeFile('D:\\cep\\training\\trello_training.csv', board_info, (err) => {
+            // throws an error, you could also catch it here
+            if (err)
+                throw err;
+            // success case, the file was saved
+            console.log('Lyric saved!');
+        });
+        //console.log(body);
+        res.status(200).send({ msg: 'success' });
     });
     // console.log('id ' + JSON.stringify(req.body));
     // getCardsURL += req.body.id + '/cards/?' + trelloPostFix;
