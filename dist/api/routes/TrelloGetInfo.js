@@ -71,12 +71,6 @@ router.post('/getCards', (req, res, next) => {
     request(options, function (err, response, body) {
         if (err)
             console.log(err);
-        // var stream = fs.createWriteStream("my_file.txt");
-        // stream.once('open', function(fd: any) {
-        //     stream.write("My first row\n");
-        //     stream.write("My second row\n");
-        //     stream.end();
-        // });
         var board_info = '';
         const columns = ['Group', 'Name', 'Location', 'Role'];
         board_info += columns.join(', ') + '\n';
@@ -91,16 +85,11 @@ router.post('/getCards', (req, res, next) => {
                 const person_info = card.name.split(/\s/);
                 board_info += person_info.slice(0, 2).join(' ') + ', ';
                 board_info += person_info.slice(2).join(' ') + ', ';
-                //in case there is no location
-                //if (person_info.length <= 2) board_info += ', ';
-                // board_info += card.name + ', ';
                 for (const label of card.labels) {
-                    //console.log('label ' + label.name);
                     board_info += label.name;
                 }
                 board_info += '\n';
             }
-            //board_info += '\n';
         }
         console.log(board_info);
         // writefile.js
