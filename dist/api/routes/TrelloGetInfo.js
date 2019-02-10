@@ -11,7 +11,7 @@ const trelloPostFix = 'key=' + trelloKey + '&token=' + trelloToken;
 const getBoardsURL = 'https://api.trello.com/1/members/me/boards?key=' + trelloKey + '&token=' + trelloToken;
 var getCardsURL = 'https://api.trello.com/1/boards/';
 // fix any types -- add class for expected data and find out what type request.body is
-router.post('/getBoards', (req, res, next) => {
+router.get('/getBoards', (req, res, next) => {
     request.get(getBoardsURL, (err, response, body) => {
         if (err) {
             res.status(500).json({

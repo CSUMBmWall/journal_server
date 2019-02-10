@@ -16,7 +16,7 @@ var getCardsURL = 'https://api.trello.com/1/boards/';
 
 
 // fix any types -- add class for expected data and find out what type request.body is
-router.post('/getBoards', (req: any, res: Response, next: any) => {
+router.get('/getBoards', (req: any, res: Response, next: any) => {
     request.get(getBoardsURL, (err: Error, response: Response, body: any) => {
 
                 if (err) {
