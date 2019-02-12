@@ -57,6 +57,38 @@ router.post('/getLabels', (req: any, res: Response, next: any) => {
 });
 
 
+// router.post('/getCards', (req: Request, res: Response, next: any) => {
+//     var options = { method: 'GET',
+//         url: 'https://api.trello.com/1/boards/'+ req.body.id + '/lists',
+//         qs:
+//             { cards: 'all',
+//                 card_fields: 'all',
+//                 filter: 'open',
+//                 fields: 'all',
+//                 key: trelloKey,
+//                 token: trelloToken } };
+//
+//     request(options, function (err: Error, response: Response, body: any) {
+//         if (err) console.log(err);
+//
+//         var board_to_columns = extractColumns(body);
+//
+//         const fs = require('fs');
+//         const dir = "C:\\Users\\Matt\\Desktop\\cep\\"
+//
+//         fs.writeFile("C:\\cep\\training\\trello_training.csv", board_to_columns, (err: Error) => {
+//             if (err) throw err;
+//
+//             // success case, the file was saved
+//             console.log('file written');
+//             res.status(200).send(board_to_columns);
+//         });
+//         //console.log(body);
+//
+//         // res.status(200).send({msg: 'success'});
+//     });
+// });
+
 router.post('/getCards', (req: Request, res: Response, next: any) => {
     var options = { method: 'GET',
         url: 'https://api.trello.com/1/boards/'+ req.body.id + '/lists',
@@ -72,37 +104,11 @@ router.post('/getCards', (req: Request, res: Response, next: any) => {
         if (err) console.log(err);
 
         var board_to_columns = extractColumns(body);
-        // var board_info = '';
-        // const columns = ['Group', 'Name', 'Location', 'Role'];
-        // board_info += columns.join(', ') + '\n';
-        // //will receive board object
-        // for (const board of JSON.parse(body)) {
-        //     //skip legend list
-        //     if (board.name == 'Legend') continue;
-        //     for(const card of board.cards) {
-        //         board_info += board.name + ', ';
-        //
-        //         //split person's name and location/job in two
-        //         const person_info = card.name.split(/\s/);
-        //         board_info += person_info.slice(0,2).join(' ') + ', ';
-        //         board_info += person_info.slice(2).join(' ') + ', ';
-        //
-        //         for (const label of card.labels) {
-        //             board_info += label.name;
-        //         }
-        //         board_info +=  '\n';
-        //     }
-        // }
-        // console.log(board_info);
-
-        // writefile.js
 
         const fs = require('fs');
+        const file_loc = "C:\\Users\\Matt\\Desktop\\cep\\";
 
-        // write to a new file named 2pac.txt
-        fs.writeFile("C:\\cep\\training\\trello_training.csv", board_to_columns, (err: Error) => {
-        // fs.writeFile('D:\\cep\\training\\trello_training.csv', board_to_columns, (err: Error) => {
-            // throws an error, you could also catch it here
+        fs.writeFile(file_loc + req.body.name + '.csv', board_to_columns, (err: Error) => {
             if (err) throw err;
 
             // success case, the file was saved
@@ -114,6 +120,38 @@ router.post('/getCards', (req: Request, res: Response, next: any) => {
         // res.status(200).send({msg: 'success'});
     });
 });
+
+function getCards(board: string) {
+    var options = { method: 'GET',
+        url: 'https://api.trello.com/1/boards/'+ board + '/lists',
+        qs:
+            { cards: 'all',
+                card_fields: 'all',
+                filter: 'open',
+                fields: 'all',
+                key: trelloKey,
+                token: trelloToken } };
+
+    request(options, function (err: Error, response: Response, body: any) {
+        if (err) console.log(err);
+        return extractColumns(body);
+    });
+}
+
+router.post('/writeToFile', (req: any, res: Response, next: any) => {
+    const board_name = req.body.name;
+    const board_info = this.getCards(board_name);
+    fs.writeFile("C:\\cep\\training\\trello_training.csv", board_info, (err: Error) => {
+        if (err) throw err;
+
+        // success case, the file was saved
+        //console.log('file written');
+        res.status(200).send(board_info);
+    });
+
+});
+
+
 
 function extractColumns(board_data: string) {
     var board_to_columns = '';

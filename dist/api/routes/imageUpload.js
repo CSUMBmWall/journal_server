@@ -11,16 +11,16 @@ const storage = multer.diskStorage({
         cb(null, './imageUploads/');
     },
     filename: function (req, file, cb) {
-        console.log('file.originalName ' + file.originalname);
+        // console.log('file.originalName ' + file.originalname);
         let fileName = fileExists(file.originalname);
-        console.log('fileName ' + fileName);
+        // console.log('fileName ' + fileName);
         cb(null, fileName);
     }
 });
 function fileExists(filename) {
     let dest = './imageUploads/' + filename;
-    console.log(dest);
-    console.log(typeof (dest));
+    // console.log(dest);
+    // console.log(typeof (dest));
     try {
         if (fs.existsSync(dest)) {
             return filename;
@@ -46,9 +46,9 @@ const router = express.Router();
 router.post('/', upload.single('img'), (req, res) => {
     // console.log(req);
     if (req.file) {
-        console.log('req.file ' + req.file);
+        // console.log('req.file ' + req.file);
         const newPath = req.file.path.replace(/\\/g, '\/');
-        console.log('newPath ' + newPath);
+        // console.log('newPath ' + newPath);
         res.status(200).json({
             // msg: 'file ' + req.file.path+ ' uploaded'
             fileLoc: 'http://localhost:3000/' + newPath
