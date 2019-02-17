@@ -102,6 +102,7 @@ router.post('/getCards', (req, res, next) => {
     });
 });
 function getCards(board) {
+    var csvData = null;
     var options = { method: 'GET',
         url: 'https://api.trello.com/1/boards/' + board + '/lists',
         qs: { cards: 'all',
@@ -109,22 +110,43 @@ function getCards(board) {
             filter: 'open',
             fields: 'all',
             key: trelloKey,
-            token: trelloToken } };
-    request(options, function (err, response, body) {
+            token: trelloToken }
+    };
+    var reqType = request(options, (err, response, body) => {
         if (err)
             console.log(err);
+        // console.log('this.csvData ' + this.csvData);
         return extractColumns(body);
     });
+    console.log(reqType);
+    return csvData;
+    //console.log(self.csvData);
+    // return this.csvData;
 }
 router.post('/writeToFile', (req, res, next) => {
     const board_name = req.body.name;
-    const board_info = this.getCards(board_name);
-    fs.writeFile("C:\\cep\\training\\trello_training.csv", board_info, (err) => {
+    const board_id = req.body.id;
+    var options = { method: 'GET',
+        url: 'https://api.trello.com/1/boards/' + board_id + '/lists',
+        qs: { cards: 'all',
+            card_fields: 'all',
+            filter: 'open',
+            fields: 'all',
+            key: trelloKey,
+            token: trelloToken }
+    };
+    request(options, (err, response, body) => {
         if (err)
-            throw err;
-        // success case, the file was saved
-        //console.log('file written');
-        res.status(200).send(board_info);
+            console.log(err);
+        // console.log('this.csvData ' + this.csvData);
+        const board_info = extractColumns(body);
+        fs.writeFile("D:\\cep\\training\\trello\\" + board_name + '.csv', board_info, (err) => {
+            if (err)
+                throw err;
+            // success case, the file was saved
+            //console.log('file written');
+            res.status(200).send({ msg: board_name + ' successfully written' });
+        });
     });
 });
 function extractColumns(board_data) {
@@ -132,12 +154,12 @@ function extractColumns(board_data) {
     const columns = ['Group', 'Name', 'Location', 'Role'];
     board_to_columns += columns.join(', ') + '\n';
     //will receive board object
-    for (const board of JSON.parse(board_data)) {
+    for (const list of JSON.parse(board_data)) {
         //skip legend list
-        if (board.name == 'Legend')
+        if (list.name == 'Legend')
             continue;
-        for (const card of board.cards) {
-            board_to_columns += board.name + ', ';
+        for (const card of list.cards) {
+            board_to_columns += list.name + ', ';
             //split person's name and location/job in two
             const person_info = card.name.split(/\s/);
             board_to_columns += person_info.slice(0, 2).join(' ') + ', ';

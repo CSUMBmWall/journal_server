@@ -27,23 +27,39 @@ router.get('/getBoards', (req, res, next) => {
                 });
             }
             res.status(200).send(board_list);
-            // res.status(200).send(body);
         }
     });
 });
-router.post('/getLabels', (req, res, next) => {
-    var options = { method: 'GET',
-        url: 'https://api.trello.com/1/boards/' + req.body.id + '/labels',
-        qs: { fields: 'all',
-            limit: '50',
-            key: trelloKey,
-            token: trelloToken } };
-    request(options, function (err, response, body) {
-        // if (err) throw new Error(err);
-        res.status(200).send(body);
-    });
-});
-router.post('/getCards', (req, res, next) => {
+// router.post('/getCards', (req: Request, res: Response, next: any) => {
+//     console.log('id ' + JSON.stringify(req.body));
+//     getCardsURL += req.body.id + '/cards/?' + trelloPostFix;
+//     console.log(this.getCardsURL);
+//     request.get(getCardsURL, (err: Error, response: Response, body: any) => {
+//         if (err) {
+//             res.status(500).json({
+//                 error: err
+//             })
+//         } else {
+//             // var card_list = [];
+//             // for (const card of JSON.parse(body)) {
+//             //     card_list.push({
+//             //         name: card.name,
+//             //         id: card.id
+//             //     });
+//             // }
+//             var cards = [];
+//             for (const item of JSON.parse(body)) {
+//                 // console.log(item);
+//                 console.log('name', item.name);
+//                 console.log('labels', item.labels);
+//             }
+//             res.status(200).send(body);
+//         }
+//     });
+//     // res.status(200).json({msg: 'all_good'});
+// });
+router.post('/writeToFile', (req, res, next) => {
+    var request = require("request");
     var options = { method: 'GET',
         url: 'https://api.trello.com/1/boards/' + req.body.id + '/lists',
         qs: { cards: 'all',
@@ -87,8 +103,7 @@ router.post('/getCards', (req, res, next) => {
             console.log('Lyric saved!');
         });
         //console.log(body);
-        res.status(200).send(body);
-        // res.status(200).send({msg: 'success'});
+        res.status(200).send({ msg: 'success' });
     });
 });
 module.exports = router;

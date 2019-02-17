@@ -121,7 +121,8 @@ router.post('/getCards', (req: Request, res: Response, next: any) => {
     });
 });
 
-function getCards(board: string) {
+function getCards(board: string): string{
+    var csvData = null;
     var options = { method: 'GET',
         url: 'https://api.trello.com/1/boards/'+ board + '/lists',
         qs:
@@ -130,24 +131,50 @@ function getCards(board: string) {
                 filter: 'open',
                 fields: 'all',
                 key: trelloKey,
-                token: trelloToken } };
-
-    request(options, function (err: Error, response: Response, body: any) {
+                token: trelloToken }
+    };
+    var reqType = request(options, (err: Error, response: Response, body: any) => {
         if (err) console.log(err);
-        return extractColumns(body);
+        // console.log('this.csvData ' + this.csvData);
+       return extractColumns(body);
     });
+
+    console.log(reqType);
+
+    return csvData;
+
+
+
+    //console.log(self.csvData);
+    // return this.csvData;
 }
 
 router.post('/writeToFile', (req: any, res: Response, next: any) => {
     const board_name = req.body.name;
-    const board_info = this.getCards(board_name);
-    fs.writeFile("C:\\cep\\training\\trello_training.csv", board_info, (err: Error) => {
-        if (err) throw err;
+    const board_id = req.body.id;
+    var options = { method: 'GET',
+        url: 'https://api.trello.com/1/boards/'+ board_id + '/lists',
+        qs:
+            { cards: 'all',
+                card_fields: 'all',
+                filter: 'open',
+                fields: 'all',
+                key: trelloKey,
+                token: trelloToken }
+    };
+    request(options, (err: Error, response: Response, body: any) => {
+        if (err) console.log(err);
+        // console.log('this.csvData ' + this.csvData);
+        const board_info = extractColumns(body);
+        fs.writeFile("D:\\cep\\training\\trello\\" + board_name + '.csv', board_info, (err: Error) => {
+            if (err) throw err;
 
-        // success case, the file was saved
-        //console.log('file written');
-        res.status(200).send(board_info);
+            // success case, the file was saved
+            //console.log('file written');
+            res.status(200).send({msg: board_name + ' successfully written'});
+        });
     });
+
 
 });
 
@@ -158,11 +185,11 @@ function extractColumns(board_data: string) {
     const columns = ['Group', 'Name', 'Location', 'Role'];
     board_to_columns += columns.join(', ') + '\n';
     //will receive board object
-    for (const board of JSON.parse(board_data)) {
+    for (const list of JSON.parse(board_data)) {
         //skip legend list
-        if (board.name == 'Legend') continue;
-        for(const card of board.cards) {
-            board_to_columns += board.name + ', ';
+        if (list.name == 'Legend') continue;
+        for(const card of list.cards) {
+            board_to_columns += list.name + ', ';
 
             //split person's name and location/job in two
             const person_info = card.name.split(/\s/);

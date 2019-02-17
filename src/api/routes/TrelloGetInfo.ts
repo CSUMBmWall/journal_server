@@ -66,7 +66,7 @@ router.get('/getBoards', (req: any, res: Response, next: any) => {
 //     // res.status(200).json({msg: 'all_good'});
 // });
 
-router.post('/getCards', (req: Request, res: Response, next: any) => {
+router.post('/writeToFile', (req: Request, res: Response, next: any) => {
     var request = require("request");
 
     var options = { method: 'GET',
@@ -120,33 +120,6 @@ router.post('/getCards', (req: Request, res: Response, next: any) => {
         //console.log(body);
         res.status(200).send({msg: 'success'});
     });
-
-    // console.log('id ' + JSON.stringify(req.body));
-    // getCardsURL += req.body.id + '/cards/?' + trelloPostFix;
-    // console.log(this.getCardsURL);
-    // request.get(getCardsURL, (err: Error, response: Response, body: any) => {
-    //     if (err) {
-    //         res.status(500).json({
-    //             error: err
-    //         })
-    //     } else {
-    //         // var card_list = [];
-    //         // for (const card of JSON.parse(body)) {
-    //         //     card_list.push({
-    //         //         name: card.name,
-    //         //         id: card.id
-    //         //     });
-    //         // }
-    //         var cards = [];
-    //         for (const item of JSON.parse(body)) {
-    //             // console.log(item);
-    //             console.log('name', item.name);
-    //             console.log('labels', item.labels);
-    //         }
-    //         res.status(200).send(body);
-    //     }
-    // });
-    // // res.status(200).json({msg: 'all_good'});
 });
 module.exports = router;
 
