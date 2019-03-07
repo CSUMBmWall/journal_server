@@ -165,8 +165,9 @@ router.post('/writeToFile', (req: any, res: Response, next: any) => {
     request(options, (err: Error, response: Response, body: any) => {
         if (err) console.log(err);
         // console.log('this.csvData ' + this.csvData);
+
         const board_info = extractColumns(body);
-        fs.writeFile("D:\\cep\\training\\trello\\" + board_name + '.csv', board_info, (err: Error) => {
+        fs.writeFile("D:\\cep\\training\\trello\\" + board_name + '.xls', board_info, (err: Error) => {
             if (err) throw err;
 
             // success case, the file was saved
@@ -182,19 +183,40 @@ router.post('/writeToFile', (req: any, res: Response, next: any) => {
 
 function extractColumns(board_data: string) {
     var board_to_columns = '';
-    const columns = ['Group', 'Name', 'Location', 'Role'];
-    board_to_columns += columns.join(', ') + '\n';
+    const columns = ['Group', 'First Name', 'Last Name', 'Role', 'City', 'State', 'Location'];
+    board_to_columns += columns.join('\t') + '\n';
     //will receive board object
     for (const list of JSON.parse(board_data)) {
         //skip legend list
         if (list.name == 'Legend') continue;
         for(const card of list.cards) {
-            board_to_columns += list.name + ', ';
+            board_to_columns += list.name + '\t';
 
+            // console.log('card.name ' + card.name);
             //split person's name and location/job in two
-            const person_info = card.name.split(/\s/);
-            board_to_columns += person_info.slice(0,2).join(' ') + ', ';
-            board_to_columns += person_info.slice(2).join(' ') + ', ';
+            const person_info = card.name.split(/-/).map((item:string) => {return item.trim();});
+            console.log(person_info);
+
+
+            board_to_columns += (person_info[0].split(/\s/)).join('\t') + '\t';
+            // board_to_columns += person_info[0].split(/\s/) + '\t';
+            // board_to_columns += person_info[1];
+            board_to_columns += person_info[1] + '\t';
+            // board_to_columns += person_info.slice(1).join('\t');
+            var cityState = person_info[2].split(/,/).map((item:string) => {return item.trim();});
+            console.log('cityState ' + cityState.join('\t'));
+            console.log('person_info[3]' + person_info[2]);
+            board_to_columns += cityState.join('\t') + '\t';
+            board_to_columns += person_info.slice(3).join('\t');
+            // board_to_columns += person_info.slice(2).join(',') + ', ';
+            // console.log('board_to_columns ' + board_to_columns);
+
+            //console.log('person_info ' + person_info[0].split(/\s/).join(' ') + ', ');
+            // console.log('person_info name ' + person_info[0].split(/\s/));
+            // console.log('person_info role ' + person_info[1]);
+            // console.log('person_info city, state ' + person_info[2].split(/,/));
+            //board_to_columns += person_info.slice(0,2).join(' ') + ', ';
+            //board_to_columns += person_info.slice(2).join(' ') + ', ';
 
             for (const label of card.labels) {
                 board_to_columns += label.name;
