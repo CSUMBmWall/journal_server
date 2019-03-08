@@ -4,6 +4,7 @@ var fs = require('fs');
 const express = require('express');
 const router = express.Router();
 const request = require('request');
+const XLSX = require('xlsx');
 /*export default new YouTubeInfo().express*/
 const trelloKey = process.env.TRELLO_KEY;
 const trelloToken = process.env.TRELLO_TOKEN;
@@ -139,14 +140,16 @@ router.post('/writeToFile', (req, res, next) => {
         if (err)
             console.log(err);
         // console.log('this.csvData ' + this.csvData);
-        const board_info = extractColumns(body);
-        fs.writeFile("D:\\cep\\training\\trello\\" + board_name + '.xls', board_info, (err) => {
-            if (err)
-                throw err;
-            // success case, the file was saved
-            //console.log('file written');
-            res.status(200).send({ msg: board_name + ' successfully written' });
-        });
+        const board_info = extractColumnsSheetJS(body);
+        //console.log('board_info ' + board_info);
+        var wb = XLSX.utils.book_new();
+        // fs.writeFile("D:\\cep\\training\\trello\\" + board_name + '.xls', board_info, (err: Error) => {
+        //     if (err) throw err;
+        //
+        //     // success case, the file was saved
+        //     //console.log('file written');
+        //     res.status(200).send({msg: board_name + ' successfully written'});
+        // });
     });
 });
 function extractColumns(board_data) {
@@ -186,6 +189,56 @@ function extractColumns(board_data) {
                 board_to_columns += label.name;
             }
             board_to_columns += '\n';
+        }
+    }
+    return board_to_columns;
+}
+function extractColumnsSheetJS(board_data) {
+    var board_to_columns = [];
+    // console.log('board_to_columns ' + typeof (board_to_columns));
+    const columns = ['Group', 'First Name', 'Last Name', 'Role', 'City', 'State', 'Location'];
+    //console.log(columns);
+    board_to_columns.push(columns);
+    //board_to_columns.push(columns);
+    //board_to_columns.push(columns);
+    console.log('board_to_columns ' + board_to_columns);
+    //will receive board object
+    for (const list of JSON.parse(board_data)) {
+        var listData = [];
+        //skip legend list
+        if (list.name == 'Legend')
+            continue;
+        for (const card of list.cards) {
+            var cards = [];
+            cards.push(list.name);
+            // cards = cards.concat(list.name);
+            // console.log('card.name ' + card.name);
+            //split person's name and location/job in two
+            const person_info = card.name.split(/-/).map((item) => { return item.trim(); });
+            listData.push(person_info[0].split(/\s/));
+            // console.log('listData ' + listData);
+            // board_to_columns += person_info[0].split(/\s/) + '\t';
+            // board_to_columns += person_info[1];
+            listData.push(person_info[1]);
+            // board_to_columns += person_info.slice(1).join('\t');
+            var cityState = person_info[2].split(/,/).map((item) => { return item.trim(); });
+            // console.log('cityState ' + cityState.join('\t'));
+            // console.log('person_info[3]' + person_info[2]);
+            listData.push(cityState);
+            listData.push(person_info.slice(3));
+            // board_to_columns += person_info.slice(2).join(',') + ', ';
+            // console.log('board_to_columns ' + board_to_columns);
+            //console.log('person_info ' + person_info[0].split(/\s/).join(' ') + ', ');
+            // console.log('person_info name ' + person_info[0].split(/\s/));
+            // console.log('person_info role ' + person_info[1]);
+            // console.log('person_info city, state ' + person_info[2].split(/,/));
+            //board_to_columns += person_info.slice(0,2).join(' ') + ', ';
+            //board_to_columns += person_info.slice(2).join(' ') + ', ';
+            // for (const label of card.labels) {
+            //     board_to_columns += label.name;
+            // }
+            //console.log('listData ' + listData);
+            //board_to_columns = board_to_columns.concat(listData);
         }
     }
     return board_to_columns;
