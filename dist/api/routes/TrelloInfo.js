@@ -197,8 +197,13 @@ function extractColumnsSheetJS(board_data) {
     var board_to_columns = [];
     // console.log('board_to_columns ' + typeof (board_to_columns));
     const columns = ['Group', 'First Name', 'Last Name', 'Role', 'City', 'State', 'Location'];
+    const test = ['test1', 'test2', 'test3'];
+    //test.push(columns);
+    //console.log(test);
     //console.log(columns);
-    board_to_columns.push(columns);
+    board_to_columns[0] = [];
+    board_to_columns[0].push(columns);
+    // board_to_columns.push(test);
     //board_to_columns.push(columns);
     //board_to_columns.push(columns);
     console.log('board_to_columns ' + board_to_columns);
