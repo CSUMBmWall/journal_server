@@ -5,3 +5,5 @@ google.png
 yarn.lock
 yarn-error.log
 imageUploads/
+dist/
+dist/api

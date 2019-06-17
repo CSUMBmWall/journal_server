@@ -167,17 +167,18 @@ router.post('/writeToFile', (req: any, res: Response, next: any) => {
         if (err) console.log(err);
         // console.log('this.csvData ' + this.csvData);
 
-        const board_info = extractColumnsSheetJS(body);
+        //const board_info = extractColumnsSheetJS(body);
+        const board_info = extractColumns(body);
         //console.log('board_info ' + board_info);
-        var wb = XLSX.utils.book_new();
+        //var wb = XLSX.utils.book_new();
 
-        // fs.writeFile("D:\\cep\\training\\trello\\" + board_name + '.xls', board_info, (err: Error) => {
-        //     if (err) throw err;
-        //
-        //     // success case, the file was saved
-        //     //console.log('file written');
-        //     res.status(200).send({msg: board_name + ' successfully written'});
-        // });
+        fs.writeFile("D:\\cep\\training\\trello\\" + board_name + '.xls', board_info, (err: Error) => {
+            if (err) throw err;
+
+            // success case, the file was saved
+            //console.log('file written');
+            res.status(200).send({msg: board_name + ' successfully written'});
+        });
     });
 
 
@@ -192,14 +193,17 @@ function extractColumns(board_data: string) {
     //will receive board object
     for (const list of JSON.parse(board_data)) {
         //skip legend list
-        if (list.name == 'Legend') continue;
+        if (list.name == 'Legend' ) { continue; }
         for(const card of list.cards) {
+            //skip happy hour homework location cards
+            if(card.name.startsWith('Tuesday') || card.name.startsWith('Wednesday')) { continue; }
             board_to_columns += list.name + '\t';
 
-            // console.log('card.name ' + card.name);
             //split person's name and location/job in two
             const person_info = card.name.split(/-/).map((item:string) => {return item.trim();});
-            console.log(person_info);
+            //if (person_info.length <3) { continue; }
+
+            //
 
 
             board_to_columns += (person_info[0].split(/\s/)).join('\t') + '\t';
@@ -208,8 +212,8 @@ function extractColumns(board_data: string) {
             board_to_columns += person_info[1] + '\t';
             // board_to_columns += person_info.slice(1).join('\t');
             var cityState = person_info[2].split(/,/).map((item:string) => {return item.trim();});
-            console.log('cityState ' + cityState.join('\t'));
-            console.log('person_info[3]' + person_info[2]);
+            // console.log('cityState ' + cityState.join('\t'));
+            // console.log('person_info[3]' + person_info[2]);
             board_to_columns += cityState.join('\t') + '\t';
             board_to_columns += person_info.slice(3).join('\t');
             // board_to_columns += person_info.slice(2).join(',') + ', ';

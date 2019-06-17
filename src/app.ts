@@ -16,6 +16,7 @@ app.use(function (req, res, next) {
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.set("port", process.env.PORT || 3000);
 app.use(logger('dev'));
@@ -46,6 +47,9 @@ app.use('/youTubeDL', youTubeDownloadRoutes);
 app.use('/ID3Tags', ID3TagRoutes);
 app.use('/imageSearch', hasImageRoutes);
 app.use('/TrelloInfo', TrelloRoutes);
+
+
+app.get('/*', (req,res) => res.sendFile(path.join(__dirname, '/public/index.html')));
 
 export default app;
 // module.exports = app;
